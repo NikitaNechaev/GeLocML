@@ -1,0 +1,28 @@
+1. Sequence Name: name (string)
+2. mcg: McGeoch's method for signal sequence prediction (real)
+3. gvh: von Heijne's method for signal sequence prediction (real)
+4. lip: von Heijne's "Sequence Statistics" method score (real)
+5. chg: Presence of charge on amino acid (real)
+6. aac: Amino acid composition (real)
+7. alm1: ALOM method score (first run) (real)
+8. alm2: ALOM method score (second run) (real)
+9. target: Localization site (class attribute)
+   cp: cytoplasmic
+   im: inner membrane without signal sequence
+   pp: periplasmic
+   imU: inner membrane, uncleavable
+   om: outer membrane
+   omL: outer membrane lipoprotein
+   imL: inner membrane lipoprotein
+   imS: inner membrane, cleavable
+
+Class distribution:
+   cp: 143
+   im: 77
+   pp: 52
+   imU: 35
+   om: 20
+   omL: 5
+   imL: 2
+   imS: 2
+   Total: 336

@@ -1,0 +1,114 @@
+# Конфигурация для GeLocML
+
+model:
+  type: "random_forest"
+  parameters:
+    n_estimators: 100
+    max_depth: 10
+    min_samples_split: 2
+    min_samples_leaf: 1
+    random_state: 42
+    n_jobs: -1
+
+data:
+  test_size: 0.2
+  random_state: 42
+  feature_columns:
+    - "sequence_length"
+    - "gc_content"
+    - "hydrophobicity"
+    - "aromaticity"
+    - "instability_index"
+  
+  # Пути к директориям
+  raw_data_dir: "data/raw"
+  processed_data_dir: "data/processed"
+  model_dir: "models"
+  results_dir: "results"
+  logs_dir: "logs"
+
+training:
+  epochs: 100
+  batch_size: 32
+  learning_rate: 0.001
+  validation_split: 0.1
+  early_stopping_patience: 10
+  save_best_only: true
+
+prediction:
+  threshold: 0.5
+  output_format: "csv"
+  
+evaluation:
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1_score"
+    - "roc_auc"
+  
+  cross_validation_folds: 5
+  
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/geloc.log"
+  max_file_size: "10MB"
+  backup_count: 5
+
+# Параметры для разных типов моделей
+models:
+  random_forest:
+    n_estimators: 100
+    max_depth: 10
+    random_state: 42
+    
+  neural_network:
+    hidden_layers: [128, 64, 32]
+    dropout_rate: 0.3
+    activation: "relu"
+    output_activation: "sigmoid"
+    
+  svm:
+    kernel: "rbf"
+    C: 1.0
+    gamma: "scale"
+    probability: true
+    
+  xgboost:
+    n_estimators: 100
+    max_depth: 6
+    learning_rate: 0.1
+    random_state: 42
+
+# Параметры предобработки данных
+preprocessing:
+  sequence_features:
+    min_length: 50
+    max_length: 1000
+    
+  feature_extraction:
+    k_mers: [1, 2, 3]  # Unigrams, bigrams, trigrams
+    amino_acid_composition: true
+    dipeptide_composition: true
+    
+  scaling:
+    method: "standard"  # standard, minmax, robust
+    with_mean: true
+    with_std: true
+    
+  dimensionality_reduction:
+    method: "pca"  # pca, none
+    n_components: 0.95  # Сохранить 95% дисперсии
+
+# Параметры валидации
+validation:
+  cross_validation:
+    n_folds: 5
+    shuffle: true
+    random_state: 42
+    
+  train_test_split:
+    test_size: 0.2
+    validation_size: 0.1
+    random_state: 42

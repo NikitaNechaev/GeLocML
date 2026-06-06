@@ -325,9 +325,27 @@ class ProteinLocalizationModel:
             raise ValueError("Модель не обучена")
         
         # Получение важности признаков из базовой модели
-        base_model = self.model.estimator_
-        if hasattr(base_model, 'feature_importances_'):
-            importance = base_model.feature_importances_
+        # OneVsRestClassifier имеет атрибут estimators_ (список оценщиков для каждого класса)
+        if hasattr(self.model, 'estimators_') and self.model.estimators_:
+            # Усредняем важность признаков по всем классам
+            importances = []
+            for estimator in self.model.estimators_:
+                if hasattr(estimator, 'feature_importances_'):
+                    importances.append(estimator.feature_importances_)
+            
+            if importances:
+                # Усредняем важность по всем классам
+                mean_importance = np.mean(importances, axis=0)
+                feature_importance_df = pd.DataFrame({
+                    'feature': self.feature_columns,
+                    'importance': mean_importance
+                }).sort_values('importance', ascending=False)
+                
+                return feature_importance_df
+        
+        # Fallback для обычных классификаторов
+        if hasattr(self.model, 'feature_importances_'):
+            importance = self.model.feature_importances_
             feature_importance_df = pd.DataFrame({
                 'feature': self.feature_columns,
                 'importance': importance

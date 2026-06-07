@@ -133,15 +133,15 @@ class ProteinLocalizationModel:
         X_scaled = self.scaler.fit_transform(X)
         return X_scaled
     
-    def train(self, X: pd.DataFrame, y: np.ndarray, 
-               epochs: int = 100, batch_size: int = 32, 
+    def train(self, X: pd.DataFrame, y: np.ndarray,
+               epochs: int = 100, batch_size: int = 32,
                learning_rate: float = 0.001) -> Dict[str, Any]:
         """
         Обучение модели
         
         Args:
             X: Признаки
-            y: Целевая переменная
+            y: Целевая переменная (может быть строковой или числовой)
             epochs: Количество эпох (для совместимости)
             batch_size: Размер батча (для совместимости)
             learning_rate: Скорость обучения (для совместимости)
@@ -150,6 +150,12 @@ class ProteinLocalizationModel:
             Dict[str, Any]: Результаты обучения
         """
         logger.info("Начало обучения модели")
+        
+        # Если y строковые - кодируем их через label_encoder
+        if hasattr(y, 'dtype') and (y.dtype == object or (hasattr(y, 'iloc') and isinstance(y.iloc[0], str))):
+            y = self.label_encoder.fit_transform(y)
+        elif isinstance(y, (list, np.ndarray)) and len(y) > 0 and isinstance(y[0], str):
+            y = self.label_encoder.fit_transform(y)
         
         # Предобработка данных
         X_processed = self.preprocess_data(X)
@@ -169,12 +175,12 @@ class ProteinLocalizationModel:
         y_pred = self.model.predict(X_test)
         y_pred_proba = self.model.predict_proba(X_test)
         
-        # Расметка метрик
+        # Расчет метрик
         metrics = {
             'accuracy': accuracy_score(y_test, y_pred),
-            'precision': precision_score(y_test, y_pred, average='weighted'),
-            'recall': recall_score(y_test, y_pred, average='weighted'),
-            'f1_score': f1_score(y_test, y_pred, average='weighted'),
+            'precision': precision_score(y_test, y_pred, average='weighted', zero_division=0),
+            'recall': recall_score(y_test, y_pred, average='weighted', zero_division=0),
+            'f1_score': f1_score(y_test, y_pred, average='weighted', zero_division=0),
         }
         
         # Кросс-валидация
@@ -245,7 +251,7 @@ class ProteinLocalizationModel:
         
         Args:
             X: Признаки
-            y: Целевая переменная
+            y: Целевая переменная (может быть строковой или числовой)
             
         Returns:
             Dict[str, float]: Метрики качества
@@ -253,15 +259,21 @@ class ProteinLocalizationModel:
         if self.model is None:
             raise ValueError("Модель не обучена")
         
+        # Если y строковые - кодируем их через label_encoder
+        if y.dtype == object or isinstance(y[0], str):
+            y_encoded = self.label_encoder.transform(y)
+        else:
+            y_encoded = y
+        
         # Предсказание
         y_pred = self.model.predict(X)
         
         # Расчет метрик
         metrics = {
-            'accuracy': accuracy_score(y, y_pred),
-            'precision': precision_score(y, y_pred, average='weighted'),
-            'recall': recall_score(y, y_pred, average='weighted'),
-            'f1_score': f1_score(y, y_pred, average='weighted'),
+            'accuracy': accuracy_score(y_encoded, y_pred),
+            'precision': precision_score(y_encoded, y_pred, average='weighted', zero_division=0),
+            'recall': recall_score(y_encoded, y_pred, average='weighted', zero_division=0),
+            'f1_score': f1_score(y_encoded, y_pred, average='weighted', zero_division=0),
         }
         
         return metrics

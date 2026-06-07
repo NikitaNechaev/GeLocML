@@ -262,9 +262,18 @@ def main():
     elif args.evaluate:
         handle_evaluate(args)
     else:
-        # Если ни один режим не указан, показать помощь
-        parser.print_help()
-        sys.exit(1)
+        # Если ни один режим не указан - автоматически запускаем обучение
+        print("Режим не указан. Автоматический запуск обучения модели...")
+        print("=" * 60)
+        # Создаем аргументы для обучения по умолчанию
+        class DefaultArgs:
+            data = 'data/raw'
+            model = 'models/geloc_model.pkl'
+            epochs = 100
+            batch_size = 32
+            learning_rate = 0.001
+            verbose = True
+        handle_train(DefaultArgs())
 
 
 if __name__ == '__main__':

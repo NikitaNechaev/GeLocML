@@ -64,10 +64,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "geloc=geloc.main:main",
-            "geloc-train=geloc.main:train_main",
-            "geloc-predict=geloc.main:predict_main",
-            "geloc-evaluate=geloc.main:evaluate_main",
+            "geloc=geloc.__main__:main",
         ],
     },
     include_package_data=True,

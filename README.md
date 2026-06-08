@@ -186,11 +186,3 @@ verbose: true
 ```bash
 geloc --train --config config.yaml
 ```
-
-## Лицензия
-
-MIT License
-
-## Контакты
-
-Если у вас есть вопросы или предложения, пожалуйста, создайте issue в репозитории.
